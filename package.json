@@ -1,21 +1,22 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
+  "name": "ovh-dns-action",
+  "description": "An action to control OVH DNS entries",
   "version": "0.0.0",
-  "author": "",
-  "private": true,
-  "homepage": "https://github.com/actions/typescript-action",
+  "author": "Solinum dev team <tech@solinum.org>",
+  "private": false,
+  "homepage": "https://github.com/solinumasso/ovh-dns-action",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/solinumasso/ovh-dns-action.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/typescript-action/issues"
+    "url": "https://github.com/solinumasso/ovh-dns-action/issues"
   },
   "keywords": [
     "actions",
     "node",
-    "setup"
+    "ovh",
+    "dns"
   ],
   "exports": {
     ".": "./dist/index.js"
@@ -67,7 +68,8 @@
     ]
   },
   "dependencies": {
-    "@actions/core": "^1.11.1"
+    "@actions/core": "^1.11.1",
+    "@ovhcloud/node-ovh": "^3.0.0"
   },
   "devDependencies": {
     "@github/local-action": "^2.2.1",
@@ -83,6 +85,7 @@
     "eslint-plugin-prettier": "^5.2.1",
     "jest": "^29.7.0",
     "make-coverage-badge": "^1.2.0",
+    "msw": "^2.7.0",
     "prettier": "^3.4.2",
     "prettier-eslint": "^16.3.0",
     "ts-jest": "^29.2.5",

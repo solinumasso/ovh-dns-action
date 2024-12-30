@@ -1,5 +1,7 @@
 import * as core from '@actions/core'
-import { wait } from './wait'
+
+import { defaultFieldType, defaultTTL, OvhClient } from './ovh'
+import { DNSFieldType } from '@ovhcloud/node-ovh'
 
 /**
  * The main function for the action.
@@ -7,20 +9,56 @@ import { wait } from './wait'
  */
 export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
+    // OVH client inputs
+    const applicationKey: string = core.getInput('applicationKey', {
+      required: true
+    })
+    core.setSecret(applicationKey)
+    const applicationSecret: string = core.getInput('applicationSecret', {
+      required: true
+    })
+    core.setSecret(applicationSecret)
+    const consumerKey: string = core.getInput('consumerKey', { required: true })
+    core.setSecret(consumerKey)
+    const endpoint: string = core.getInput('endpoint')
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const zone: string = core.getInput('zone', { required: true })
+    const subDomain: string = core.getInput('subDomain', { required: true })
+    const present: boolean = core.getBooleanInput('present', { required: true })
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    // Create an OVH client
+    const client = new OvhClient(
+      applicationKey,
+      applicationSecret,
+      consumerKey,
+      zone,
+      endpoint
+    )
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    if (present) {
+      const target: string = core.getInput('target', { required: true })
+      const rawTtl: string = core.getInput('ttl')
+      const ttl = rawTtl.length ? parseInt(rawTtl, 10) : defaultTTL
+      const rawFieldType: string = core.getInput('type')
+      const fieldType: string = rawFieldType.length
+        ? rawFieldType
+        : defaultFieldType
+      const record = await client.upsertSubDomainRecord(
+        subDomain,
+        target,
+        fieldType as DNSFieldType,
+        ttl
+      )
+
+      // Set outputs for other workflow steps to use
+      core.setOutput('record', record)
+    } else {
+      await client.deleteSubDomainRecord(subDomain)
+    }
   } catch (error) {
     // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error) {
+      core.setFailed(error.message)
+    }
   }
 }

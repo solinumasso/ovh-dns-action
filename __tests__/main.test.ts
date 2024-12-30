@@ -7,7 +7,17 @@
  */
 
 import * as core from '@actions/core'
+import { setupServer } from 'msw/node'
+
 import * as main from '../src/main'
+
+import { dnsRecord, subDomain, zone } from './mocks/handlers/const'
+import { commonHandlers } from './mocks/handlers/common'
+import { listFound, listNotFound } from './mocks/handlers/list'
+import { getFound } from './mocks/handlers/get'
+import { deleteOK } from './mocks/handlers/delete'
+import { updateOK } from './mocks/handlers/update'
+import { createOK } from './mocks/handlers/create'
 
 // Mock the action's main function
 const runMock = jest.spyOn(main, 'run')
@@ -16,74 +26,162 @@ const runMock = jest.spyOn(main, 'run')
 const timeRegex = /^\d{2}:\d{2}:\d{2}/
 
 // Mock the GitHub Actions core library
-let debugMock: jest.SpiedFunction<typeof core.debug>
 let errorMock: jest.SpiedFunction<typeof core.error>
 let getInputMock: jest.SpiedFunction<typeof core.getInput>
-let setFailedMock: jest.SpiedFunction<typeof core.setFailed>
+let getBooleanInputMock: jest.SpiedFunction<typeof core.getBooleanInput>
 let setOutputMock: jest.SpiedFunction<typeof core.setOutput>
 
 describe('action', () => {
+  let server: ReturnType<typeof setupServer>
+
+  beforeAll(() => {
+    server = setupServer(...commonHandlers)
+  })
+
   beforeEach(() => {
+    server.listen({ onUnhandledRequest: 'error' })
     jest.clearAllMocks()
 
-    debugMock = jest.spyOn(core, 'debug').mockImplementation()
     errorMock = jest.spyOn(core, 'error').mockImplementation()
     getInputMock = jest.spyOn(core, 'getInput').mockImplementation()
-    setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
+    getBooleanInputMock = jest
+      .spyOn(core, 'getBooleanInput')
+      .mockImplementation()
     setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
   })
 
-  it('sets the time output', async () => {
+  afterEach(() => {
+    server.resetHandlers()
+  })
+
+  afterAll(() => {
+    server.close()
+  })
+
+  it('delete the record', async () => {
     // Set the action's inputs as return values from core.getInput()
     getInputMock.mockImplementation(name => {
       switch (name) {
-        case 'milliseconds':
-          return '500'
+        case 'applicationKey':
+          return 'appKey'
+        case 'applicationSecret':
+          return 'appSecret'
+        case 'consumerKey':
+          return 'consumerKey'
+        case 'zone':
+          return zone
+        case 'subDomain':
+          return subDomain
         default:
           return ''
       }
     })
+    getBooleanInputMock.mockImplementation(name => {
+      switch (name) {
+        case 'present':
+          return false
+        default:
+          return false
+      }
+    })
+
+    server.use(listFound, getFound, deleteOK)
 
     await main.run()
     expect(runMock).toHaveReturned()
 
     // Verify that all of the core library functions were called correctly
-    expect(debugMock).toHaveBeenNthCalledWith(1, 'Waiting 500 milliseconds ...')
-    expect(debugMock).toHaveBeenNthCalledWith(
-      2,
-      expect.stringMatching(timeRegex)
-    )
-    expect(debugMock).toHaveBeenNthCalledWith(
-      3,
-      expect.stringMatching(timeRegex)
-    )
-    expect(setOutputMock).toHaveBeenNthCalledWith(
-      1,
-      'time',
-      expect.stringMatching(timeRegex)
-    )
+    expect(setOutputMock).not.toHaveBeenCalled()
+    expect(errorMock).not.toHaveBeenCalled()
+  })
+
+  it('update the record', async () => {
+    // Set the action's inputs as return values from core.getInput()
+    getInputMock.mockImplementation(name => {
+      switch (name) {
+        case 'applicationKey':
+          return 'appKey'
+        case 'applicationSecret':
+          return 'appSecret'
+        case 'consumerKey':
+          return 'consumerKey'
+        case 'zone':
+          return zone
+        case 'subDomain':
+          return subDomain
+        case 'target':
+          return dnsRecord.target
+        default:
+          return ''
+      }
+    })
+    getBooleanInputMock.mockImplementation(name => {
+      switch (name) {
+        case 'present':
+          return true
+        default:
+          return false
+      }
+    })
+
+    server.use(listFound, getFound, updateOK)
+
+    await main.run()
+    expect(runMock).toHaveReturned()
+
+    // Verify that all of the core library functions were called correctly
+    expect(setOutputMock).toHaveBeenNthCalledWith(1, 'record', dnsRecord)
+    expect(errorMock).not.toHaveBeenCalled()
+  })
+
+  it('create the record', async () => {
+    // Set the action's inputs as return values from core.getInput()
+    getInputMock.mockImplementation(name => {
+      switch (name) {
+        case 'applicationKey':
+          return 'appKey'
+        case 'applicationSecret':
+          return 'appSecret'
+        case 'consumerKey':
+          return 'consumerKey'
+        case 'zone':
+          return zone
+        case 'subDomain':
+          return subDomain
+        case 'target':
+          return dnsRecord.target
+        default:
+          return ''
+      }
+    })
+    getBooleanInputMock.mockImplementation(name => {
+      switch (name) {
+        case 'present':
+          return true
+        default:
+          return false
+      }
+    })
+
+    server.use(listNotFound, createOK)
+
+    await main.run()
+    expect(runMock).toHaveReturned()
+
+    // Verify that all of the core library functions were called correctly
+    expect(setOutputMock).toHaveBeenNthCalledWith(1, 'record', dnsRecord)
     expect(errorMock).not.toHaveBeenCalled()
   })
 
   it('sets a failed status', async () => {
     // Set the action's inputs as return values from core.getInput()
-    getInputMock.mockImplementation(name => {
-      switch (name) {
-        case 'milliseconds':
-          return 'this is not a number'
-        default:
-          return ''
-      }
-    })
+    getInputMock.mockImplementation(() => '')
+    getBooleanInputMock.mockImplementation(() => false)
 
     await main.run()
     expect(runMock).toHaveReturned()
 
     // Verify that all of the core library functions were called correctly
-    expect(setFailedMock).toHaveBeenNthCalledWith(
-      1,
-      'milliseconds not a number'
-    )
-    expect(errorMock).not.toHaveBeenCalled()
+    expect(errorMock).toHaveBeenCalled()
   })
 })

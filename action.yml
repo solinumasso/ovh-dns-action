@@ -1,6 +1,6 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'OVH DNS'
+description: 'Upsert or delete an OVH DNS entry'
+author: 'Solinum'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
@@ -9,15 +9,44 @@ branding:
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  applicationKey:
+    description: 'OVH Application Key'
     required: true
-    default: '1000'
+  applicationSecret:
+    description: 'OVH Application Secret'
+    required: true
+  consumerKey:
+    description: 'OVH Consumer Key'
+    required: true
+  endpoint:
+    description: 'OVH Endpoint'
+    required: true
+    default: 'ovh-eu'
+  zone:
+    description: 'The zone of the DNS entry'
+    required: true
+  subDomain:
+    description: 'The subdomain of the DNS entry'
+    required: true
+  target:
+    description: 'The target of the DNS entry, required if present is true'
+  present:
+    description: 'Should this record be present or absent'
+    required: true
+    default: 'true'
+  type:
+    description: 'The type of the DNS entry'
+    required: true
+    default: 'CNAME'
+  ttl:
+    description: 'The TTL of the DNS entry'
+    required: false
+    default: '600'
 
 # Define your outputs here.
 outputs:
-  time:
-    description: 'Your output description here'
+  record:
+    description: 'The updated DNS record, if present is true'
 
 runs:
   using: node20
