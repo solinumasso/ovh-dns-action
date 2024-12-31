@@ -44,21 +44,25 @@ jobs:
         id: npm-ci-test
         run: npm run ci-test
 
-  test-action:
-    name: GitHub Actions Test
-    runs-on: ubuntu-latest
+  # Testing the local action like that would require OVH domain
+  # and so on dedicated to this CI to make sure it works end-to-end.
+  # Not setting this up for now.
 
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
+  # test-action:
+  #   name: GitHub Actions Test
+  #   runs-on: ubuntu-latest
 
-      - name: Test Local Action
-        id: test-action
-        uses: ./
-        with:
-          milliseconds: 2000
+  #   steps:
+  #     - name: Checkout
+  #       id: checkout
+  #       uses: actions/checkout@v4
 
-      - name: Print Output
-        id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+  #     - name: Test Local Action
+  #       id: test-action
+  #       uses: ./
+  #       with:
+  #         milliseconds: 2000
+
+  #     - name: Print Output
+  #       id: output
+  #       run: echo "${{ steps.test-action.outputs.record }}"
