@@ -1,4 +1,4 @@
-# OVH dns action
+# OVH DNS action
 
 [![GitHub Super-Linter](https://github.com/solinumasso/dns-ovh-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
 ![CI](https://github.com/solinumasso/dns-ovh-action/actions/workflows/ci.yml/badge.svg)
@@ -49,7 +49,7 @@ The only output is `record` which is the raw output from OVH API if
 ## Caveats
 
 This action is using node-ovh internally so it does not support proxy for
-self-hosted runners as other GIthub actions do.
+self-hosted runners as other GitHub Actions do.
 
 ## Contributions
 

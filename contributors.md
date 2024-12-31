@@ -2,8 +2,8 @@
 
 Thank you for contributing!
 
-The following documentation is a copy paste of
-[Typescript example of a custom Github action](https://github.com/actions/typescript-action/README.md).
+The following documentation is a copypaste of
+[TypeScript example of a custom GitHub Action](https://github.com/actions/typescript-action/README.md).
 
 ## Initial Setup
 
