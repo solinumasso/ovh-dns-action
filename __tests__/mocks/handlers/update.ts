@@ -18,7 +18,7 @@ export const updateOK = http.put(
       body.target === dnsRecord.target &&
       body.ttl === dnsRecord.ttl
     ) {
-      return HttpResponse.json({ ...dnsRecord }, { status: 201 })
+      return HttpResponse.json(null, { status: 201 })
     }
     return HttpResponse.json({ message: 'Bad request' }, { status: 400 })
   }

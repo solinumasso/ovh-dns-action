@@ -88,7 +88,7 @@ describe('ovh.ts OvhClient', () => {
   })
 
   it('updateSubDomainRecord updates an existing record', async () => {
-    server.use(updateOK)
+    server.use(getFound, updateOK)
     const result = await client.updateSubDomainRecord(
       dnsRecord.subDomain,
       recordId,
