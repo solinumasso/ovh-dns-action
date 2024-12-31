@@ -13,19 +13,39 @@ export async function run(): Promise<void> {
     const applicationKey: string = core.getInput('application-key', {
       required: true
     })
+    if (!applicationKey?.length) {
+      core.setFailed('OVH Application key is required')
+      return
+    }
     core.setSecret(applicationKey)
     const applicationSecret: string = core.getInput('application-secret', {
       required: true
     })
+    if (!applicationSecret?.length) {
+      core.setFailed('OVH Application secret is required')
+      return
+    }
     core.setSecret(applicationSecret)
     const consumerKey: string = core.getInput('consumer-key', {
       required: true
     })
+    if (!consumerKey?.length) {
+      core.setFailed('OVH Consumer key is required')
+      return
+    }
     core.setSecret(consumerKey)
     const endpoint: string = core.getInput('endpoint')
 
     const zone: string = core.getInput('zone', { required: true })
+    if (!zone?.length) {
+      core.setFailed('zone is required')
+      return
+    }
     const subdomain: string = core.getInput('subdomain', { required: true })
+    if (!subdomain?.length) {
+      core.setFailed('zone is required')
+      return
+    }
     const present: boolean = core.getBooleanInput('present', { required: true })
 
     // Create an OVH client

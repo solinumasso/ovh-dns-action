@@ -18,10 +18,10 @@ import { deleteOK } from './mocks/handlers/delete'
 
 // Mock the GitHub Actions core library
 let errorMock: jest.SpiedFunction<typeof core.error>
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let warningMock: jest.SpiedFunction<typeof core.warning>
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let setSecretMock: jest.SpiedFunction<typeof core.setSecret>
+jest.spyOn(core, 'debug').mockImplementation()
+jest.spyOn(core, 'setFailed').mockImplementation()
+jest.spyOn(core, 'warning').mockImplementation()
+jest.spyOn(core, 'setSecret').mockImplementation()
 
 describe('ovh.ts OvhClient', () => {
   let client: OvhClient
@@ -34,8 +34,6 @@ describe('ovh.ts OvhClient', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     errorMock = jest.spyOn(core, 'error').mockImplementation()
-    warningMock = jest.spyOn(core, 'warning').mockImplementation()
-    setSecretMock = jest.spyOn(core, 'setSecret').mockImplementation()
 
     server.listen({ onUnhandledRequest: 'error' })
     client = new OvhClient('appKey', 'appSecret', 'consumerKey', zone)
@@ -47,6 +45,7 @@ describe('ovh.ts OvhClient', () => {
 
   afterAll(() => {
     server.close()
+    jest.restoreAllMocks()
   })
 
   it('getSubdomainRecord returns false if no record found', async () => {

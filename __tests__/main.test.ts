@@ -23,12 +23,13 @@ import { createOK } from './mocks/handlers/create'
 const runMock = jest.spyOn(main, 'run')
 
 // Mock the GitHub Actions core library
+let setFailedMock: jest.SpiedFunction<typeof core.setFailed>
 let errorMock: jest.SpiedFunction<typeof core.error>
 let getInputMock: jest.SpiedFunction<typeof core.getInput>
 let getBooleanInputMock: jest.SpiedFunction<typeof core.getBooleanInput>
 let setOutputMock: jest.SpiedFunction<typeof core.setOutput>
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let setSecretMock: jest.SpiedFunction<typeof core.setSecret>
+jest.spyOn(core, 'setSecret').mockImplementation()
+jest.spyOn(core, 'debug').mockImplementation()
 
 describe('action', () => {
   let server: ReturnType<typeof setupServer>
@@ -39,15 +40,15 @@ describe('action', () => {
 
   beforeEach(() => {
     server.listen({ onUnhandledRequest: 'error' })
-    jest.clearAllMocks()
 
+    jest.clearAllMocks()
+    setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
     errorMock = jest.spyOn(core, 'error').mockImplementation()
     getInputMock = jest.spyOn(core, 'getInput').mockImplementation()
     getBooleanInputMock = jest
       .spyOn(core, 'getBooleanInput')
       .mockImplementation()
     setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
-    setSecretMock = jest.spyOn(core, 'setSecret').mockImplementation()
   })
 
   afterEach(() => {
@@ -56,6 +57,7 @@ describe('action', () => {
 
   afterAll(() => {
     server.close()
+    jest.restoreAllMocks()
   })
 
   it('delete the record', async () => {
@@ -183,13 +185,13 @@ describe('action', () => {
 
   it('sets a failed status', async () => {
     // Set the action's inputs as return values from core.getInput()
-    getInputMock.mockImplementation(() => '')
+    getInputMock.mockImplementation(() => '') // No inputs
     getBooleanInputMock.mockImplementation(() => false)
 
     await main.run()
     expect(runMock).toHaveReturned()
 
     // Verify that all of the core library functions were called correctly
-    expect(errorMock).toHaveBeenCalled()
+    expect(setFailedMock).toHaveBeenCalled()
   })
 })
