@@ -130,7 +130,11 @@ describe('action', () => {
     expect(runMock).toHaveReturned()
 
     // Verify that all of the core library functions were called correctly
-    expect(setOutputMock).toHaveBeenNthCalledWith(1, 'record', dnsRecord)
+    expect(setOutputMock).toHaveBeenNthCalledWith(
+      1,
+      'record',
+      JSON.stringify(dnsRecord)
+    )
     expect(errorMock).not.toHaveBeenCalled()
   })
 
@@ -169,7 +173,11 @@ describe('action', () => {
     expect(runMock).toHaveReturned()
 
     // Verify that all of the core library functions were called correctly
-    expect(setOutputMock).toHaveBeenNthCalledWith(1, 'record', dnsRecord)
+    expect(setOutputMock).toHaveBeenNthCalledWith(
+      1,
+      'record',
+      JSON.stringify(dnsRecord)
+    )
     expect(errorMock).not.toHaveBeenCalled()
   })
 

@@ -51,7 +51,7 @@ export async function run(): Promise<void> {
       )
 
       // Set outputs for other workflow steps to use
-      core.setOutput('record', record)
+      core.setOutput('record', JSON.stringify(record))
     } else {
       await client.deleteSubDomainRecord(subDomain)
     }

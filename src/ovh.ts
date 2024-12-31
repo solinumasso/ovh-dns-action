@@ -17,7 +17,7 @@ export class OvhClient {
   ) {
     try {
       this.client = ovh({
-        endpoint: this.endpoint ?? 'ovh-eu',
+        endpoint: this.endpoint?.length ? this.endpoint : 'ovh-eu',
         appKey: this.applicationKey,
         appSecret: this.applicationSecret,
         consumerKey: this.consumerKey
@@ -63,7 +63,7 @@ export class OvhClient {
         throw error
       }
     } catch (error) {
-      core.error(`Error getting record ID: ${error}`)
+      core.error(`Error getting record ID: ${JSON.stringify(error)}`)
       throw new Error('Error getting record ID', { cause: error })
     }
   }
@@ -82,7 +82,7 @@ export class OvhClient {
         target
       })) as DNSRecord
     } catch (error) {
-      core.error(`Error creating record: ${error}`)
+      core.error(`Error creating record: ${JSON.stringify(error)}`)
       throw new Error('Error creating record', { cause: error })
     }
   }
@@ -106,7 +106,7 @@ export class OvhClient {
         }
       )) as DNSRecord
     } catch (error) {
-      core.error(`Error updating record: ${error}`)
+      core.error(`Error updating record: ${JSON.stringify(error)}`)
       throw new Error('Error updating record', { cause: error })
     }
   }
@@ -128,7 +128,7 @@ export class OvhClient {
         `${this.basePath}/${record.id}`
       )
     } catch (error) {
-      core.error(`Error deleting record: ${error}`)
+      core.error(`Error deleting record: ${JSON.stringify(error)}`)
       throw new Error('Error deleting record', { cause: error })
     }
   }
@@ -155,10 +155,3 @@ export class OvhClient {
     )
   }
 }
-
-// const target = 'z1501eca1-z7507fa33-gtw.z318efa74.xms.sh.'
-
-// setSubDomainRecord('api', target).then(result => {
-//   console.log('Set result', result)
-//   deleteSubDomainRecord('api').then(console.log)
-// })
