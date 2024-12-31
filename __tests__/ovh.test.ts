@@ -18,7 +18,9 @@ import { deleteOK } from './mocks/handlers/delete'
 
 // Mock the GitHub Actions core library
 let errorMock: jest.SpiedFunction<typeof core.error>
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let warningMock: jest.SpiedFunction<typeof core.warning>
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let setSecretMock: jest.SpiedFunction<typeof core.setSecret>
 
 describe('ovh.ts OvhClient', () => {

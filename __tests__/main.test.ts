@@ -27,6 +27,7 @@ let errorMock: jest.SpiedFunction<typeof core.error>
 let getInputMock: jest.SpiedFunction<typeof core.getInput>
 let getBooleanInputMock: jest.SpiedFunction<typeof core.getBooleanInput>
 let setOutputMock: jest.SpiedFunction<typeof core.setOutput>
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let setSecretMock: jest.SpiedFunction<typeof core.setSecret>
 
 describe('action', () => {
