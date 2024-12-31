@@ -53752,19 +53752,21 @@ const ovh_1 = __nccwpck_require__(2216);
 async function run() {
     try {
         // OVH client inputs
-        const applicationKey = core.getInput('applicationKey', {
+        const applicationKey = core.getInput('application-key', {
             required: true
         });
         core.setSecret(applicationKey);
-        const applicationSecret = core.getInput('applicationSecret', {
+        const applicationSecret = core.getInput('application-secret', {
             required: true
         });
         core.setSecret(applicationSecret);
-        const consumerKey = core.getInput('consumerKey', { required: true });
+        const consumerKey = core.getInput('consumer-key', {
+            required: true
+        });
         core.setSecret(consumerKey);
         const endpoint = core.getInput('endpoint');
         const zone = core.getInput('zone', { required: true });
-        const subDomain = core.getInput('subDomain', { required: true });
+        const subdomain = core.getInput('subdomain', { required: true });
         const present = core.getBooleanInput('present', { required: true });
         // Create an OVH client
         const client = new ovh_1.OvhClient(applicationKey, applicationSecret, consumerKey, zone, endpoint);
@@ -53776,12 +53778,12 @@ async function run() {
             const fieldType = rawFieldType.length
                 ? rawFieldType
                 : ovh_1.defaultFieldType;
-            const record = await client.upsertSubDomainRecord(subDomain, target, fieldType, ttl);
+            const record = await client.upsertSubdomainRecord(subdomain, target, fieldType, ttl);
             // Set outputs for other workflow steps to use
             core.setOutput('record', JSON.stringify(record));
         }
         else {
-            await client.deleteSubDomainRecord(subDomain);
+            await client.deleteSubdomainRecord(subdomain);
         }
     }
     catch (error) {
@@ -53872,7 +53874,7 @@ class OvhClient {
         // see https://eu.api.ovh.com/console/?section=%2Fdomain&branch=v1#get-/domain/zone/-zoneName-/record
         this.basePath = `/domain/zone/${this.zone}/record`;
     }
-    async getSubDomainRecordFromId(id) {
+    async getSubdomainRecordFromId(id) {
         try {
             return (await this.client.requestPromised('GET', `${this.basePath}/${id}`));
         }
@@ -53888,30 +53890,30 @@ class OvhClient {
             throw new Error('Error getting record', { cause: error });
         }
     }
-    async getSubDomainRecord(subDomain, fieldType) {
+    async getSubdomainRecord(subdomain, fieldType) {
         try {
             const results = await this.client.requestPromised('GET', this.basePath, {
                 fieldType,
-                subDomain
+                subDomain: subdomain
             });
             if (!Array.isArray(results) ||
                 results.length === 0 ||
                 typeof results[0] !== 'number') {
                 return false;
             }
-            return await this.getSubDomainRecordFromId(results[0]);
+            return await this.getSubdomainRecordFromId(results[0]);
         }
         catch (error) {
             core.error(`Error getting record ID: ${JSON.stringify(error)}`);
             throw new Error('Error getting record ID', { cause: error });
         }
     }
-    async createSubDomainRecord(subDomain, target, fieldType = exports.defaultFieldType, ttl = exports.defaultTTL) {
+    async createSubdomainRecord(subdomain, target, fieldType = exports.defaultFieldType, ttl = exports.defaultTTL) {
         try {
             return (await this.client.requestPromised('POST', this.basePath, {
                 fieldType,
                 ttl,
-                subDomain,
+                subDomain: subdomain,
                 target
             }));
         }
@@ -53920,12 +53922,12 @@ class OvhClient {
             throw new Error('Error creating record', { cause: error });
         }
     }
-    async updateSubDomainRecord(subDomain, id, target, fieldType = exports.defaultFieldType, ttl = exports.defaultTTL) {
+    async updateSubdomainRecord(subdomain, id, target, fieldType = exports.defaultFieldType, ttl = exports.defaultTTL) {
         try {
             await this.client.requestPromised('PUT', `${this.basePath}/${id}`, {
                 fieldType,
                 ttl,
-                subDomain,
+                subDomain: subdomain,
                 target
             });
         }
@@ -53933,7 +53935,7 @@ class OvhClient {
             core.error(`Error updating record: ${JSON.stringify(error)}`);
             throw new Error('Error updating record', { cause: error });
         }
-        const record = await this.getSubDomainRecordFromId(id);
+        const record = await this.getSubdomainRecordFromId(id);
         if (!record) {
             throw new Error('Error updating record', {
                 cause: new Error('Record not found after update')
@@ -53941,9 +53943,9 @@ class OvhClient {
         }
         return record;
     }
-    async deleteSubDomainRecord(subDomain, fieldType = exports.defaultFieldType) {
+    async deleteSubdomainRecord(subdomain, fieldType = exports.defaultFieldType) {
         try {
-            const record = await this.getSubDomainRecord(subDomain, fieldType);
+            const record = await this.getSubdomainRecord(subdomain, fieldType);
             if (!record) {
                 core.warning('No record found, nothing to delete');
                 return;
@@ -53957,15 +53959,15 @@ class OvhClient {
             throw new Error('Error deleting record', { cause: error });
         }
     }
-    async upsertSubDomainRecord(subDomain, target, fieldType = exports.defaultFieldType, ttl = exports.defaultTTL) {
-        const record = await this.getSubDomainRecord(subDomain, fieldType);
+    async upsertSubdomainRecord(subdomain, target, fieldType = exports.defaultFieldType, ttl = exports.defaultTTL) {
+        const record = await this.getSubdomainRecord(subdomain, fieldType);
         if (!record) {
             core.debug('No record found, creating it...');
-            return await this.createSubDomainRecord(subDomain, target, fieldType, ttl);
+            return await this.createSubdomainRecord(subdomain, target, fieldType, ttl);
         }
         core.debug('Record found, updating it...');
         core.debug(JSON.stringify(record));
-        return await this.updateSubDomainRecord(subDomain, record.id, target, fieldType, ttl);
+        return await this.updateSubdomainRecord(subdomain, record.id, target, fieldType, ttl);
     }
 }
 exports.OvhClient = OvhClient;
