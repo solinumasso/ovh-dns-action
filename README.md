@@ -20,9 +20,9 @@ See [action.yml](action.yml)
   with:
     # OVH credentials
     # Check the documentation here: https://help.ovhcloud.com/csm/en-gb-api-getting-started-ovhcloud-api?id=kb_article_view&sysparm_article=KB0042784
-    applicationKey: ${{ secrets.OVH_APPLICATION_KEY }}
-    applicationSecret: ${{ secrets.OVH_APPLICATION_SECRET }}
-    consumerKey: ${{ secrets.OVH_CONSUMER_KEY }}
+    application-key: ${{ secrets.OVH_APPLICATION_KEY }}
+    application-secret: ${{ secrets.OVH_APPLICATION_SECRET }}
+    consumer-key: ${{ secrets.OVH_CONSUMER_KEY }}
     # See options here: https://github.com/ovh/node-ovh/blob/master/lib/endpoints.js
     # endpoint: ovh-eu
 
@@ -30,7 +30,7 @@ See [action.yml](action.yml)
     present: true
 
     zone: example.com
-    subDomain: www
+    subdomain: www
     # If preset is true, otherwise useless
     target: example.org.
 

@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
 
-import { baseURL, recordId, subDomain as expectedSubDomain } from '../const'
+import { baseURL, recordId, subdomain as expectedSubdomain } from '../const'
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const getList = (result: number[]) =>
@@ -8,10 +8,10 @@ const getList = (result: number[]) =>
     // Construct a URL instance out of the intercepted request.
     const url = new URL(request.url)
     const fieldType = url.searchParams.get('fieldType')
-    const subDomain = url.searchParams.get('subDomain')
+    const subdomain = url.searchParams.get('subDomain')
     if (
       (!fieldType || fieldType === 'CNAME') &&
-      subDomain === expectedSubDomain
+      subdomain === expectedSubdomain
     ) {
       return HttpResponse.json(result)
     }

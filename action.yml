@@ -9,13 +9,13 @@ branding:
 
 # Define your inputs here.
 inputs:
-  applicationKey:
+  application-key:
     description: 'OVH Application Key'
     required: true
-  applicationSecret:
+  application-secret:
     description: 'OVH Application Secret'
     required: true
-  consumerKey:
+  consumer-key:
     description: 'OVH Consumer Key'
     required: true
   endpoint:
@@ -25,7 +25,7 @@ inputs:
   zone:
     description: 'The zone of the DNS entry'
     required: true
-  subDomain:
+  subdomain:
     description: 'The subdomain of the DNS entry'
     required: true
   target:

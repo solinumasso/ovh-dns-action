@@ -11,7 +11,7 @@ import { setupServer } from 'msw/node'
 
 import * as main from '../src/main'
 
-import { dnsRecord, subDomain, zone } from './mocks/const'
+import { dnsRecord, subdomain, zone } from './mocks/const'
 import { commonHandlers } from './mocks/handlers/common'
 import { listFound, listNotFound } from './mocks/handlers/list'
 import { getFound } from './mocks/handlers/get'
@@ -59,16 +59,16 @@ describe('action', () => {
     // Set the action's inputs as return values from core.getInput()
     getInputMock.mockImplementation(name => {
       switch (name) {
-        case 'applicationKey':
+        case 'application-key':
           return 'appKey'
-        case 'applicationSecret':
+        case 'application-secret':
           return 'appSecret'
-        case 'consumerKey':
+        case 'consumer-key':
           return 'consumerKey'
         case 'zone':
           return zone
-        case 'subDomain':
-          return subDomain
+        case 'subdomain':
+          return subdomain
         default:
           return ''
       }
@@ -96,16 +96,16 @@ describe('action', () => {
     // Set the action's inputs as return values from core.getInput()
     getInputMock.mockImplementation(name => {
       switch (name) {
-        case 'applicationKey':
+        case 'application-key':
           return 'appKey'
-        case 'applicationSecret':
+        case 'application-secret':
           return 'appSecret'
-        case 'consumerKey':
+        case 'consumer-key':
           return 'consumerKey'
         case 'zone':
           return zone
-        case 'subDomain':
-          return subDomain
+        case 'subdomain':
+          return subdomain
         case 'target':
           return dnsRecord.target
         default:
@@ -139,16 +139,16 @@ describe('action', () => {
     // Set the action's inputs as return values from core.getInput()
     getInputMock.mockImplementation(name => {
       switch (name) {
-        case 'applicationKey':
+        case 'application-key':
           return 'appKey'
-        case 'applicationSecret':
+        case 'application-secret':
           return 'appSecret'
-        case 'consumerKey':
+        case 'consumer-key':
           return 'consumerKey'
         case 'zone':
           return zone
-        case 'subDomain':
-          return subDomain
+        case 'subdomain':
+          return subdomain
         case 'target':
           return dnsRecord.target
         default:

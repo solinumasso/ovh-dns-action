@@ -31,7 +31,7 @@ export class OvhClient {
     this.basePath = `/domain/zone/${this.zone}/record`
   }
 
-  async getSubDomainRecordFromId(id: number): Promise<false | DNSRecord> {
+  async getSubdomainRecordFromId(id: number): Promise<false | DNSRecord> {
     try {
       return (await this.client.requestPromised(
         'GET',
@@ -52,14 +52,14 @@ export class OvhClient {
     }
   }
 
-  async getSubDomainRecord(
-    subDomain: string,
+  async getSubdomainRecord(
+    subdomain: string,
     fieldType?: DNSFieldType
   ): Promise<false | DNSRecord> {
     try {
       const results = await this.client.requestPromised('GET', this.basePath, {
         fieldType,
-        subDomain
+        subDomain: subdomain
       })
       if (
         !Array.isArray(results) ||
@@ -68,15 +68,15 @@ export class OvhClient {
       ) {
         return false
       }
-      return await this.getSubDomainRecordFromId(results[0])
+      return await this.getSubdomainRecordFromId(results[0])
     } catch (error) {
       core.error(`Error getting record ID: ${JSON.stringify(error)}`)
       throw new Error('Error getting record ID', { cause: error })
     }
   }
 
-  async createSubDomainRecord(
-    subDomain: string,
+  async createSubdomainRecord(
+    subdomain: string,
     target: string,
     fieldType: DNSFieldType = defaultFieldType,
     ttl: number = defaultTTL
@@ -85,7 +85,7 @@ export class OvhClient {
       return (await this.client.requestPromised('POST', this.basePath, {
         fieldType,
         ttl,
-        subDomain,
+        subDomain: subdomain,
         target
       })) as DNSRecord
     } catch (error) {
@@ -94,8 +94,8 @@ export class OvhClient {
     }
   }
 
-  async updateSubDomainRecord(
-    subDomain: string,
+  async updateSubdomainRecord(
+    subdomain: string,
     id: number,
     target: string,
     fieldType: DNSFieldType = defaultFieldType,
@@ -105,14 +105,14 @@ export class OvhClient {
       await this.client.requestPromised('PUT', `${this.basePath}/${id}`, {
         fieldType,
         ttl,
-        subDomain,
+        subDomain: subdomain,
         target
       })
     } catch (error) {
       core.error(`Error updating record: ${JSON.stringify(error)}`)
       throw new Error('Error updating record', { cause: error })
     }
-    const record = await this.getSubDomainRecordFromId(id)
+    const record = await this.getSubdomainRecordFromId(id)
     if (!record) {
       throw new Error('Error updating record', {
         cause: new Error('Record not found after update')
@@ -121,12 +121,12 @@ export class OvhClient {
     return record
   }
 
-  async deleteSubDomainRecord(
-    subDomain: string,
+  async deleteSubdomainRecord(
+    subdomain: string,
     fieldType: DNSFieldType = defaultFieldType
   ): Promise<void> {
     try {
-      const record = await this.getSubDomainRecord(subDomain, fieldType)
+      const record = await this.getSubdomainRecord(subdomain, fieldType)
       if (!record) {
         core.warning('No record found, nothing to delete')
         return
@@ -143,21 +143,21 @@ export class OvhClient {
     }
   }
 
-  async upsertSubDomainRecord(
-    subDomain: string,
+  async upsertSubdomainRecord(
+    subdomain: string,
     target: string,
     fieldType: DNSFieldType = defaultFieldType,
     ttl: number = defaultTTL
   ): Promise<DNSRecord> {
-    const record = await this.getSubDomainRecord(subDomain, fieldType)
+    const record = await this.getSubdomainRecord(subdomain, fieldType)
     if (!record) {
       core.debug('No record found, creating it...')
-      return await this.createSubDomainRecord(subDomain, target, fieldType, ttl)
+      return await this.createSubdomainRecord(subdomain, target, fieldType, ttl)
     }
     core.debug('Record found, updating it...')
     core.debug(JSON.stringify(record))
-    return await this.updateSubDomainRecord(
-      subDomain,
+    return await this.updateSubdomainRecord(
+      subdomain,
       record.id,
       target,
       fieldType,

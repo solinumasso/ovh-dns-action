@@ -10,20 +10,22 @@ import { DNSFieldType } from '@ovhcloud/node-ovh'
 export async function run(): Promise<void> {
   try {
     // OVH client inputs
-    const applicationKey: string = core.getInput('applicationKey', {
+    const applicationKey: string = core.getInput('application-key', {
       required: true
     })
     core.setSecret(applicationKey)
-    const applicationSecret: string = core.getInput('applicationSecret', {
+    const applicationSecret: string = core.getInput('application-secret', {
       required: true
     })
     core.setSecret(applicationSecret)
-    const consumerKey: string = core.getInput('consumerKey', { required: true })
+    const consumerKey: string = core.getInput('consumer-key', {
+      required: true
+    })
     core.setSecret(consumerKey)
     const endpoint: string = core.getInput('endpoint')
 
     const zone: string = core.getInput('zone', { required: true })
-    const subDomain: string = core.getInput('subDomain', { required: true })
+    const subdomain: string = core.getInput('subdomain', { required: true })
     const present: boolean = core.getBooleanInput('present', { required: true })
 
     // Create an OVH client
@@ -43,8 +45,8 @@ export async function run(): Promise<void> {
       const fieldType: string = rawFieldType.length
         ? rawFieldType
         : defaultFieldType
-      const record = await client.upsertSubDomainRecord(
-        subDomain,
+      const record = await client.upsertSubdomainRecord(
+        subdomain,
         target,
         fieldType as DNSFieldType,
         ttl
@@ -53,7 +55,7 @@ export async function run(): Promise<void> {
       // Set outputs for other workflow steps to use
       core.setOutput('record', JSON.stringify(record))
     } else {
-      await client.deleteSubDomainRecord(subDomain)
+      await client.deleteSubdomainRecord(subdomain)
     }
   } catch (error) {
     // Fail the workflow run if an error occurs
