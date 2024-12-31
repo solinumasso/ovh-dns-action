@@ -53,3 +53,14 @@ self-hosted runners as other GitHub Actions do.
 ## Contributions
 
 Contributions are welcome! See [Contributor's Guide](contributors.md)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
+for details.
+
+## Aknowledge
+
+This repository has been created from GitHub's template
+[typescript-action](https://github.com/actions/typescript-action) under
+[MIT license](https://github.com/actions/typescript-action/blob/main/LICENSE)
