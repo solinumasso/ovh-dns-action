@@ -53883,7 +53883,7 @@ class OvhClient {
                 error &&
                 'error' in error &&
                 error.error === 404) {
-                core.error(`Record ${id} not found`);
+                core.warning(`Record ${id} not found`);
                 return false;
             }
             core.error(`Error getting record: ${JSON.stringify(error)}`);

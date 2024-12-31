@@ -2,6 +2,7 @@
  * Unit tests for src/ovh.ts
  */
 
+import * as core from '@actions/core'
 import { expect } from '@jest/globals'
 import { setupServer } from 'msw/node'
 
@@ -15,6 +16,11 @@ import { createOK } from './mocks/handlers/create'
 import { updateOK } from './mocks/handlers/update'
 import { deleteOK } from './mocks/handlers/delete'
 
+// Mock the GitHub Actions core library
+let errorMock: jest.SpiedFunction<typeof core.error>
+let warningMock: jest.SpiedFunction<typeof core.warning>
+let setSecretMock: jest.SpiedFunction<typeof core.setSecret>
+
 describe('ovh.ts OvhClient', () => {
   let client: OvhClient
   let server: ReturnType<typeof setupServer>
@@ -24,6 +30,11 @@ describe('ovh.ts OvhClient', () => {
   })
 
   beforeEach(() => {
+    jest.clearAllMocks()
+    errorMock = jest.spyOn(core, 'error').mockImplementation()
+    warningMock = jest.spyOn(core, 'warning').mockImplementation()
+    setSecretMock = jest.spyOn(core, 'setSecret').mockImplementation()
+
     server.listen({ onUnhandledRequest: 'error' })
     client = new OvhClient('appKey', 'appSecret', 'consumerKey', zone)
   })
@@ -40,6 +51,7 @@ describe('ovh.ts OvhClient', () => {
     server.use(listNotFound, getFound)
     const result = await client.getSubdomainRecord(subdomain)
     expect(result).toBe(false)
+    expect(errorMock).not.toHaveBeenCalled()
   })
 
   // This test is probably a bit overkill but who knows?
@@ -47,24 +59,28 @@ describe('ovh.ts OvhClient', () => {
     server.use(listFound, getNotFound)
     const result = await client.getSubdomainRecord(subdomain)
     expect(result).toBe(false)
+    expect(errorMock).not.toHaveBeenCalled()
   })
 
   it('getSubdomainRecord returns false if no record found, with fieldType', async () => {
     server.use(listNotFound, getFound)
     const result = await client.getSubdomainRecord(subdomain, 'CNAME')
     expect(result).toBe(false)
+    expect(errorMock).not.toHaveBeenCalled()
   })
 
   it('getSubdomainRecord returns record if found', async () => {
     server.use(listFound, getFound)
     const result = await client.getSubdomainRecord(subdomain)
     expect(result).toEqual(dnsRecord)
+    expect(errorMock).not.toHaveBeenCalled()
   })
 
   it('getSubdomainRecord returns record if found, with fieldType', async () => {
     server.use(listFound, getFound)
     const result = await client.getSubdomainRecord(subdomain, 'CNAME')
     expect(result).toEqual(dnsRecord)
+    expect(errorMock).not.toHaveBeenCalled()
   })
 
   it('createSubdomainRecord creates a new record', async () => {
@@ -74,6 +90,7 @@ describe('ovh.ts OvhClient', () => {
       dnsRecord.target
     )
     expect(result).toEqual(dnsRecord)
+    expect(errorMock).not.toHaveBeenCalled()
   })
 
   it('createSubdomainRecord creates a new record, with fieldType and TTL', async () => {
@@ -85,6 +102,7 @@ describe('ovh.ts OvhClient', () => {
       600
     )
     expect(result).toEqual(dnsRecord)
+    expect(errorMock).not.toHaveBeenCalled()
   })
 
   it('updateSubdomainRecord updates an existing record', async () => {
@@ -95,16 +113,19 @@ describe('ovh.ts OvhClient', () => {
       dnsRecord.target
     )
     expect(result).toEqual(dnsRecord)
+    expect(errorMock).not.toHaveBeenCalled()
   })
 
   it('deleteSubdomainRecord deletes an existing record', async () => {
     server.use(listFound, getFound, deleteOK)
     await client.deleteSubdomainRecord(dnsRecord.subDomain)
+    expect(errorMock).not.toHaveBeenCalled()
   })
 
   it('deleteSubdomainRecord deletes a non-existing record', async () => {
     server.use(listNotFound)
     await client.deleteSubdomainRecord(dnsRecord.subDomain)
+    expect(errorMock).not.toHaveBeenCalled()
   })
 
   it('upsertSubdomainRecord creates a new record if none exists', async () => {
@@ -114,6 +135,7 @@ describe('ovh.ts OvhClient', () => {
       dnsRecord.target
     )
     expect(result).toEqual(dnsRecord)
+    expect(errorMock).not.toHaveBeenCalled()
   })
 
   it('upsertSubdomainRecord updates an existing record if found', async () => {
@@ -123,5 +145,6 @@ describe('ovh.ts OvhClient', () => {
       dnsRecord.target
     )
     expect(result).toEqual(dnsRecord)
+    expect(errorMock).not.toHaveBeenCalled()
   })
 })
