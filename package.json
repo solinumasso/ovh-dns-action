@@ -1,7 +1,7 @@
 {
   "name": "ovh-dns-action",
   "description": "An action to control OVH DNS entries",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "author": "Solinum dev team <tech@solinum.org>",
   "private": false,
   "homepage": "https://github.com/solinumasso/ovh-dns-action",
