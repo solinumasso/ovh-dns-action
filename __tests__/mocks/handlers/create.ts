@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
 
-import { baseURL, dnsRecord } from './const'
+import { baseURL, dnsRecord } from '../const'
 
 export const createOK = http.post(baseURL, async ({ request }) => {
   // Construct a URL instance out of the intercepted request.

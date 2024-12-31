@@ -1,5 +1,5 @@
 import { http, passthrough } from 'msw'
-import { ovhEuEndpoint } from './const'
+import { ovhEuEndpoint } from '../const'
 
 // Handlers used in any conditions
 export const commonHandlers = [

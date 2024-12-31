@@ -11,7 +11,7 @@ import { setupServer } from 'msw/node'
 
 import * as main from '../src/main'
 
-import { dnsRecord, subDomain, zone } from './mocks/handlers/const'
+import { dnsRecord, subDomain, zone } from './mocks/const'
 import { commonHandlers } from './mocks/handlers/common'
 import { listFound, listNotFound } from './mocks/handlers/list'
 import { getFound } from './mocks/handlers/get'
@@ -21,9 +21,6 @@ import { createOK } from './mocks/handlers/create'
 
 // Mock the action's main function
 const runMock = jest.spyOn(main, 'run')
-
-// Other utilities
-const timeRegex = /^\d{2}:\d{2}:\d{2}/
 
 // Mock the GitHub Actions core library
 let errorMock: jest.SpiedFunction<typeof core.error>

@@ -1,7 +1,8 @@
 import { http, HttpResponse } from 'msw'
 
-import { baseURL, recordId, subDomain as expectedSubDomain } from './const'
+import { baseURL, recordId, subDomain as expectedSubDomain } from '../const'
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const getList = (result: number[]) =>
   http.get(baseURL, ({ request }) => {
     // Construct a URL instance out of the intercepted request.

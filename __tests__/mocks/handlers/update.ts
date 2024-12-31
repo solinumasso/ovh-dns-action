@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
 
-import { baseURL, dnsRecord, recordId } from './const'
+import { baseURL, dnsRecord, recordId } from '../const'
 
 export const updateOK = http.put(
   `${baseURL}/:recordId`,

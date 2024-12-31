@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
 
-import { baseURL, recordId, dnsRecord } from './const'
+import { baseURL, recordId, dnsRecord } from '../const'
 
 export const getFound = http.get(`${baseURL}/${recordId}`, () =>
   HttpResponse.json(dnsRecord)

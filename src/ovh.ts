@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 import ovh, { type DNSFieldType, type DNSRecord } from '@ovhcloud/node-ovh'
 
-export const defaultFieldType = 'CNAME' as const
-export const defaultTTL = 600 as const
+export const defaultFieldType = 'CNAME'
+export const defaultTTL = 600
 
 export class OvhClient {
   private readonly client: ReturnType<typeof ovh>
@@ -23,7 +23,7 @@ export class OvhClient {
         consumerKey: this.consumerKey
       })
     } catch (error) {
-      core.error(`Error creating OVH client: ${error}`)
+      core.error(`Error creating OVH client: ${JSON.stringify(error)}`)
       throw new Error('Error creating OVH client', { cause: error })
     }
     // Base path to control DNS records
@@ -31,9 +31,7 @@ export class OvhClient {
     this.basePath = `/domain/zone/${this.zone}/record`
   }
 
-  public async getSubDomainRecordFromId(
-    id: number
-  ): Promise<false | DNSRecord> {
+  async getSubDomainRecordFromId(id: number): Promise<false | DNSRecord> {
     try {
       return (await this.client.requestPromised(
         'GET',
@@ -54,7 +52,7 @@ export class OvhClient {
     }
   }
 
-  public async getSubDomainRecord(
+  async getSubDomainRecord(
     subDomain: string,
     fieldType?: DNSFieldType
   ): Promise<false | DNSRecord> {
@@ -63,7 +61,11 @@ export class OvhClient {
         fieldType,
         subDomain
       })
-      if (!Array.isArray(results) || results.length === 0) {
+      if (
+        !Array.isArray(results) ||
+        results.length === 0 ||
+        typeof results[0] !== 'number'
+      ) {
         return false
       }
       return await this.getSubDomainRecordFromId(results[0])
@@ -73,7 +75,7 @@ export class OvhClient {
     }
   }
 
-  public async createSubDomainRecord(
+  async createSubDomainRecord(
     subDomain: string,
     target: string,
     fieldType: DNSFieldType = defaultFieldType,
@@ -92,7 +94,7 @@ export class OvhClient {
     }
   }
 
-  public async updateSubDomainRecord(
+  async updateSubDomainRecord(
     subDomain: string,
     id: number,
     target: string,
@@ -119,7 +121,7 @@ export class OvhClient {
     return record
   }
 
-  public async deleteSubDomainRecord(
+  async deleteSubDomainRecord(
     subDomain: string,
     fieldType: DNSFieldType = defaultFieldType
   ): Promise<void> {
@@ -141,7 +143,7 @@ export class OvhClient {
     }
   }
 
-  public async upsertSubDomainRecord(
+  async upsertSubDomainRecord(
     subDomain: string,
     target: string,
     fieldType: DNSFieldType = defaultFieldType,
