@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/solinumasso/ovh-dns-action/actions/workflows/ci.yml/badge.svg)
 [![Check dist/](https://github.com/solinumasso/ovh-dns-action/actions/workflows/check-dist.yml/badge.svg)](https://github.com/solinumasso/ovh-dns-action/actions/workflows/check-dist.yml)
-[![CodeQL](https://github.com/solinumasso/ovh-dns-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/solinumasso/ovh-dns-action/actions/workflows/codeql-analysis.yml)
+[![CodeQL](https://github.com/solinumasso/ovh-dns-action/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/solinumasso/ovh-dns-action/actions/workflows/github-code-scanning/codeql)
 [![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
 
 This action provides the following functionality for GitHub Actions users:
